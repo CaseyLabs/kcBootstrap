@@ -33,8 +33,7 @@ Overview:
 ```shell
 .
 ├── code      # Source code
-├── config    # Files used to configure + build the source code
-├── data      # Static data produced or used by the source code
-└── misc      # Scripts + docs related to building source code
+├── config    # Files + scripts used to configure + build the source code
+└── misc      # Misc scripts + docs related to source code
 ```
 
