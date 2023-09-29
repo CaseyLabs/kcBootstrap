@@ -1,2 +1,11 @@
 # kcBootstrap
-Misc network bootstrap scripts
+
+Miscellaneous bootstrap scripts and templates.
+
+## Overview
+
+```
+.
+├── templates
+│   └── kcRepo              | Git repo template
+```

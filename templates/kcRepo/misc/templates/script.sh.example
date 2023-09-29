@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+# @file kcSample
+# @brief A sample shell script.
+
+# -- Setup
+
+set -e                        # exit script if error encountered
+. ./misc/scripts/shared.sh    # import shared shell functions + env vars
+trap finishScript EXIT        # run finishScript function on exit
+
+# --- Script
+export scriptStartTime=${SECONDS}
