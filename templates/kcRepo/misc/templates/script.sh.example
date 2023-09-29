@@ -3,7 +3,7 @@
 # @file kcSample
 # @brief A sample shell script.
 
-# -- Setup
+# --- Setup
 
 set -e                               # exit script if error encountered
 . ${kcDir}/misc/scripts/shared.sh    # import shared shell functions + env vars

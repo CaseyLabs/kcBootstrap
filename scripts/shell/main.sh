@@ -1,0 +1,162 @@
+# @name kcShell
+# @brief Shell script helper functions.
+#
+# @description
+#
+# Shell script helper functions, to be sourced into a parent script.
+# 
+# ## Usage
+#
+# Install:
+# ```
+# . <(curl -s https://raw.githubusercontent.com/CaseyLabs/kcBootstrap/main/code/shell/main.sh)
+# ```
+
+# --- Setup
+
+kcScriptDir="$(cd "$(dirname "$0")" && pwd)"  # get script location
+kcEpoch=$(date +%s)  # current time in Unix epoch format
+
+# Root user check:
+# - check if Effective User ID (EUID) is set to 0 (0 = root user)
+# - If not, optionally prepend `sudo` to commands:
+if [ "$EUID" -ne 0 ]; then 
+  sudo="sudo" 
+else 
+  sudo='' 
+fi
+
+# --- Functions
+
+# @description `log` events to output. Example: `log info "Uploading data..."`
+log() {
+  # Example output: 
+  # $timestamp | $HOSTNAME | [$eventType] $eventMessage
+  # 2023-09-28 11:03:57 PM PDT | thinkpad-linux | [info] test
+
+  local timestamp=$(date +"%Y-%m-%d %I:%M:%S %p %Z" )
+  local eventType="$1"
+  local eventMessage="$2"
+
+  local logPrefix="$timestamp | $HOSTNAME | [$eventType]"
+  
+  case "$eventType" in
+    debug | Debug | DEBUG)      
+      if [ -z "$DEBUG" ]; then return # Only log if $DEBUG env var is set
+      else echo "$logPrefix $eventMessage"
+      fi 
+      ;;
+    error | Error | ERROR)
+      # Send output to stderr (&2):
+      echo "$logPrefix $eventMessage" >&2 ; return 
+      ;;
+    *)
+      echo "$logPrefix $eventMessage" ; return 
+      ;;
+  esac
+}
+
+# ---
+
+scriptStartTime=$(date +%s)
+
+# @description `finishScript` executes when the script exits.
+finishScript() {
+  local scriptFinishTime=$(date +%s)
+  log info "Script finished in $((scriptFinishTime - scriptStartTime)) seconds."
+}
+
+# ---
+
+# @description `check`` if a variable, app, file, or directory exists
+# example: `check myVar; check /home/$USER/.bashrc; check git`
+check() {
+  # Ensure an argument is provided
+  if [ -z "$1" ]; then
+    echo "Please provide a name or path to check."
+    return 1
+  fi
+
+  # Check if it's an environment variable
+  if eval "test -n \"\${$1:-}\""; then
+    eval "echo \"Variable <$1> exists with value: \$$1\""
+    return
+  fi
+
+  # Check if it's a command available on $PATH
+  if command -v "$1" > /dev/null 2>&1; then
+    echo "Command <$1> is available on PATH at location: $(command -v "$1")"
+    return
+  fi
+
+  # If it's not an environment variable or a command, check if it's a file or directory and get its absolute path
+  if [ -f "$1" ]; then 
+    if [ "$(echo "$1" | cut -c1)" = "/" ]; then
+      echo "File exists at: $1"
+    else
+      echo "File exists at: $(pwd)/$1"
+    fi
+  elif [ -d "$1" ]; then 
+    if [ "$(echo "$1" | cut -c1)" = "/" ]; then
+      echo "Directory exists at: $1"
+    else
+      echo "Directory exists at: $(pwd)/$1"
+    fi
+  else 
+    echo "The given argument does not correspond to an existing environment variable, command on PATH, file, or directory."
+    return 1
+  fi
+}
+
+# ---
+
+# @description `get` | download and install a system package. 
+# Usage: `get mysql-client`
+get() {
+ if command -v apt > /dev/null; then
+    $sudo apt update
+    $sudo apt install -y "$@"
+    $sudo apt autoremove -y
+    $sudo apt clean
+
+  elif command -v yum > /dev/null; then
+    $sudo yum install -y "$@"
+
+  elif command -v dnf > /dev/null; then
+    $sudo dnf install -y "$@"
+
+  elif command -v apk > /dev/null; then
+    $sudo apk add --no-cache "$@"
+
+  else
+    echo "Could not detect package manager apt, yum, dnf, or apk."
+    return 1
+  fi
+}
+
+# ---
+
+# @description `remove` | uninstall a system package. 
+# Usage: `remove mysql-client`
+remove() {
+  # For APT (Debian/Ubuntu)
+  if command -v apt > /dev/null; then
+    $sudo apt autoremove --purge -y "$@"
+
+  # For YUM (Older Red Hat, CentOS)
+  elif command -v yum > /dev/null; then
+    $sudo yum remove -y "$@"
+
+  # For DNF (Modern Red Hat, Fedora, CentOS)
+  elif command -v dnf > /dev/null; then
+    $sudo dnf remove -y "$@"
+
+  # For APK (Alpine Linux)
+  elif command -v apk > /dev/null; then
+    $sudo apk del "$@"
+
+  else
+    echo "Could not detect package manager."
+    return 1
+  fi
+}
