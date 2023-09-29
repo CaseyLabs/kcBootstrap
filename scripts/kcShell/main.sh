@@ -9,7 +9,7 @@
 #
 # Install:
 # ```
-# . <(curl -s https://raw.githubusercontent.com/CaseyLabs/kcBootstrap/main/code/shell/main.sh)
+# . <(curl -s https://raw.githubusercontent.com/CaseyLabs/kcBootstrap/main/scripts/kcShell/main.sh)
 # ```
 
 # --- Setup
