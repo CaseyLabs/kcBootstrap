@@ -5,9 +5,10 @@
 
 # -- Setup
 
-set -e                        # exit script if error encountered
-. ./misc/scripts/shared.sh    # import shared shell functions + env vars
-trap finishScript EXIT        # run finishScript function on exit
+set -e                               # exit script if error encountered
+. ${kcDir}/misc/scripts/shared.sh    # import shared shell functions + env vars
+trap finishScript EXIT               # run finishScript function on exit
 
 # --- Script
-export scriptStartTime=${SECONDS}
+
+# insert commands here

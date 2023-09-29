@@ -6,7 +6,7 @@
 # -- Setup
 
 set -e                        # exit script if error encountered
-. ./misc/scripts/shared.sh   # import shared shell functions
+. ${kcDir}/misc/scripts/shared.sh   # import shared shell functions
 trap finishScript EXIT        # run finishScript function on exit
 
 # --- Script
