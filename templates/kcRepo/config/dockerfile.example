@@ -1,0 +1,11 @@
+# Use the slim version of the official Python image as the base image:
+FROM python:slim
+
+# Set the working directory inside the container to /app:
+WORKDIR /app
+
+# Copy all files from  local ./code/ dir to the /app dir inside the container:
+COPY ./code/* .
+
+# Command that should run when the container starts:
+ENTRYPOINT ["python", "./example.py"]
