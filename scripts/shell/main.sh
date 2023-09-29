@@ -73,37 +73,38 @@ finishScript() {
 check() {
   # Ensure an argument is provided
   if [ -z "$1" ]; then
-    echo "Please provide a name or path to check."
+    log error "Please provide a name or path to check."
     return 1
   fi
 
   # Check if it's an environment variable
   if eval "test -n \"\${$1:-}\""; then
-    eval "echo \"Variable <$1> exists with value: \$$1\""
+    log info "Variable <$1> exists with value: \$$1"
     return
   fi
 
   # Check if it's a command available on $PATH
   if command -v "$1" > /dev/null 2>&1; then
-    echo "Command <$1> is available on PATH at location: $(command -v "$1")"
+    log info "Command <$1> is available on PATH at location: $(command -v "$1")"
     return
   fi
 
-  # If it's not an environment variable or a command, check if it's a file or directory and get its absolute path
+  # If it's not an env var or a command, check if it's a file or directory 
+  # and get its absolute path
   if [ -f "$1" ]; then 
     if [ "$(echo "$1" | cut -c1)" = "/" ]; then
-      echo "File exists at: $1"
+      log info "File exists at: $1"
     else
-      echo "File exists at: $(pwd)/$1"
+      log info "File exists at: $(pwd)/$1"
     fi
   elif [ -d "$1" ]; then 
     if [ "$(echo "$1" | cut -c1)" = "/" ]; then
-      echo "Directory exists at: $1"
+      log info "Directory exists at: $1"
     else
-      echo "Directory exists at: $(pwd)/$1"
+      log info "Directory exists at: $(pwd)/$1"
     fi
   else 
-    echo "The given argument does not correspond to an existing environment variable, command on PATH, file, or directory."
+    log error "Could not find file, directory, env var, or app with that name."
     return 1
   fi
 }
@@ -129,7 +130,7 @@ get() {
     $sudo apk add --no-cache "$@"
 
   else
-    echo "Could not detect package manager apt, yum, dnf, or apk."
+    log error "Could not detect package manager apt, yum, dnf, or apk."
     return 1
   fi
 }
@@ -156,7 +157,36 @@ remove() {
     $sudo apk del "$@"
 
   else
-    echo "Could not detect package manager."
+    log error "Could not detect package manager."
     return 1
   fi
+}
+
+# ---
+
+# @description `grab` - downloads and installs a .deb .or .tar.gz
+# Usage: grab https://my_url/myfile.deb
+grab() {
+    # Check if a URL is provided
+    if [ -z "$1" ]; then
+        log error "Please provide a URL."
+        return 1
+    fi
+
+    # If it's a .deb file
+    if [[ "$1" == *.deb ]]; then
+        wget -O temp.deb "$1" &&
+        sudo dpkg -i temp.deb &&
+        rm -f temp.deb
+
+    # If it's a .tar.gz file
+    elif [[ "$1" == *.tar.gz ]]; then
+        wget -O temp.tar.gz "$1" &&
+        mkdir -p tar-extracted &&
+        tar -xvf temp.tar.gz -C tar-extracted/ &&
+        rm -f temp.tar.gz
+    else
+        log error "Unsupported file type. Please provide a .deb or .tar.gz URL."
+        return 1
+    fi
 }
