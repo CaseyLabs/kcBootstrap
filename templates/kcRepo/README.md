@@ -29,7 +29,6 @@ make deploy
 
 ### Repo Structure
 
-Overview:
 ```shell
 .
 ├── code      # Source code
