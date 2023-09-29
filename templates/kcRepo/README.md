@@ -15,8 +15,8 @@ make code
 # Test the code:
 make test
 
-# Run the code:
-make run
+# Start running the code:
+make start
 
 # Stop running the code:
 make stop
