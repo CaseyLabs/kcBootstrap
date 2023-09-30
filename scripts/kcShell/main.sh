@@ -9,7 +9,8 @@
 #
 # Install:
 # ```
-# . <(curl -s https://raw.githubusercontent.com/CaseyLabs/kcBootstrap/main/scripts/kcShell/main.sh)
+# helperScript=$(curl -s https://raw.githubusercontent.com/CaseyLabs/kcBootstrap/main/scripts/kcShell/main.sh)
+# eval "$helperScript"
 # ```
 
 # --- Setup
@@ -190,3 +191,28 @@ grab() {
         return 1
     fi
 }
+
+# ---
+
+# @brief `forEachLine`
+# @description Performs a command for each value (`thisLine`) in a file
+# @param $1 - The target file to read lines from
+# @param $2 - The command to run for each line, where the value from the line can be represented by `$thisLine`
+# @example `forEachLine myVars.txt "echo \"The value for $thisLine is: $thisLine\""`
+forEachLine() {
+    # Ensure both arguments are provided
+    if [ "$#" -ne 2 ]; then
+        echo "Usage: forEachLine <targetFile> <commandToRun>"
+        return 1
+    fi
+
+    # Read the file line by line
+    while IFS= read -r thisLine; do
+        # Use eval to execute the command, replacing occurrences of $thisLine with the current line value
+        eval "$(echo "$2" | sed "s/\$thisLine/$thisLine/g")"
+    done < "$1"
+}
+
+# Example usage:
+# Assuming you have a file called '.env' with multiple lines
+forEachLine ./.env "echo \"The value of thisLine is: $thisLine\""
