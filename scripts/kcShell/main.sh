@@ -105,7 +105,7 @@ check() {
       log info "Directory exists at: $(pwd)/$1"
     fi
   else 
-    log error "Could not find file, directory, env var, or app with that name."
+    log error "Could not find file, directory, env var, or app with name: $1"
     return 1
   fi
 }
