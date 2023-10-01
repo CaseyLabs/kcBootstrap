@@ -216,3 +216,14 @@ forEachLine() {
 # Example usage:
 # Assuming you have a file called '.env' with multiple lines
 forEachLine ./.env "echo \"The value of thisLine is: $thisLine\""
+
+# ---
+
+# @brief 'makepass`
+# @description Generates a 64 character random string.
+makepass() {
+  local length="$1"
+  if [ -z "$length" ]; then length="64"; fi 
+
+  openssl rand -base64 $1
+}
