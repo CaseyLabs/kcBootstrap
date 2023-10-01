@@ -213,10 +213,6 @@ forEachLine() {
     done < "$1"
 }
 
-# Example usage:
-# Assuming you have a file called '.env' with multiple lines
-forEachLine ./.env "echo \"The value of thisLine is: $thisLine\""
-
 # ---
 
 # @brief 'makepass`
