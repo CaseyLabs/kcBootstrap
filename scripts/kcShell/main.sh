@@ -15,9 +15,6 @@
 
 # --- Setup
 
-kcScriptDir="$(cd "$(dirname "$0")" && pwd)"  # get script location
-kcEpoch=$(date +%s)  # current time in Unix epoch format
-
 # Root user check:
 # - check if Effective User ID (EUID) is set to 0 (0 = root user)
 # - If not, optionally prepend `sudo` to commands:
