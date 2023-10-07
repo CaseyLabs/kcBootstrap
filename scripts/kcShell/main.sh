@@ -1,10 +1,10 @@
-# @name kcShell
-# @brief Shell script helper functions.
+# @name: kcShell
+# @description: Shell script helper functions.
 #
 # @description
 #
 # Shell script helper functions, to be sourced into a parent script.
-# 
+#
 # ## Usage
 #
 # Install:
@@ -18,17 +18,17 @@
 # Root user check:
 # - check if Effective User ID (EUID) is set to 0 (0 = root user)
 # - If not, optionally prepend `sudo` to commands:
-if [ "$EUID" -ne 0 ]; then 
-  sudo="sudo" 
-else 
-  sudo='' 
+if [ "$EUID" -ne 0 ]; then
+  sudo="sudo"
+else
+  sudo=''
 fi
 
 # --- Functions
 
 # @description `log` events to output. Example: `log info "Uploading data..."`
 log() {
-  # Example output: 
+  # Example output:
   # $timestamp | $HOSTNAME | [$eventType] $eventMessage
   # 2023-09-28 11:03:57 PM PDT | thinkpad-linux | [info] test
 
@@ -37,19 +37,19 @@ log() {
   local eventMessage="$2"
 
   local logPrefix="$timestamp | $HOSTNAME | [$eventType]"
-  
+
   case "$eventType" in
-    debug | Debug | DEBUG)      
+    debug | Debug | DEBUG)
       if [ -z "$DEBUG" ]; then return # Only log if $DEBUG env var is set
       else echo "$logPrefix $eventMessage"
-      fi 
+      fi
       ;;
     error | Error | ERROR)
       # Send output to stderr (&2):
-      echo "$logPrefix $eventMessage" >&2 ; return 
+      echo "$logPrefix $eventMessage" >&2 ; return
       ;;
     *)
-      echo "$logPrefix $eventMessage" ; return 
+      echo "$logPrefix $eventMessage" ; return
       ;;
   esac
 }
@@ -212,7 +212,7 @@ forEachLine() {
 
 # ---
 
-# @brief 'makepass`
+# @brief `makepass`
 # @description Generates a 64 character random string.
 makepass() {
   local length="$1"
@@ -220,3 +220,22 @@ makepass() {
 
   openssl rand -base64 $1
 }
+
+# ---
+
+# @brief `asdfinstall`
+# @description adsf version manager helper - setups desired plugin and installs latest version of desired tool
+asdfinstall() {
+  local tool="$1"
+
+  if [ -z "$1" ]; then
+    log error "Please provide a tool name to install. Example: asfdinstall golang"
+    return 1
+  fi
+
+  asdf plugin add "${tool}"
+  asdf plugin install "${tool}" latest
+  asdf global "${tool}" latest
+  asdf reshim
+}
+
